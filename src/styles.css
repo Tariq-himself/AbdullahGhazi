@@ -1,0 +1,268 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent-start: var(--accent-start);
+  --color-accent-middle: var(--accent-middle);
+  --color-accent-end: var(--accent-end);
+  --font-sans: "Inter", "SF Pro Display", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.13 0.01 270);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.16 0.012 270);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.16 0.012 270);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0.13 0.01 270);
+  --secondary: oklch(0.22 0.012 270);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.22 0.012 270);
+  --muted-foreground: oklch(0.71 0.012 270);
+  --accent: oklch(0.22 0.012 270);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.63 0.24 27);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.26 0.012 270);
+  --input: oklch(0.26 0.012 270);
+  --ring: oklch(0.75 0.18 320);
+
+  --accent-start: oklch(0.72 0.19 50);     /* orange-500 #f97316 */
+  --accent-middle: oklch(0.65 0.27 320);   /* purple-500 #a855f7 */
+  --accent-end: oklch(0.63 0.22 260);      /* blue-500 #3b82f6 */
+
+  --gradient-focal: linear-gradient(135deg, #f97316 0%, #ef4444 25%, #a855f7 55%, #6366f1 80%, #3b82f6 100%);
+  --gradient-glow:
+    radial-gradient(50% 50% at 20% 30%, rgba(249, 115, 22, 0.18), transparent 70%),
+    radial-gradient(55% 55% at 75% 25%, rgba(168, 85, 247, 0.18), transparent 70%),
+    radial-gradient(60% 60% at 50% 80%, rgba(59, 130, 246, 0.18), transparent 70%);
+  --shadow-focal: 0 30px 80px -20px rgba(168, 85, 247, 0.35);
+  --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark { color-scheme: dark; }
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { color-scheme: dark; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection { background: #a855f7; color: #fff; }
+}
+
+@utility bento-card {
+  background-color: rgba(9, 9, 11, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.8);
+  border-radius: 12px;
+  transition: var(--transition-smooth);
+  &:hover {
+    border-color: rgba(168, 85, 247, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px -16px rgba(168, 85, 247, 0.15), 0 0 0 1px rgba(168, 85, 247, 0.1);
+  }
+}
+
+@utility card-tilt {
+  --card-rx: 0deg;
+  --card-ry: 0deg;
+  --card-mx: 50%;
+  --card-my: 50%;
+  --card-active: 0;
+  --card-tilt-intensity: 1;
+  position: relative;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  transform-style: preserve-3d;
+  transform: perspective(900px)
+    rotateX(var(--card-rx))
+    rotateY(var(--card-ry))
+    translate3d(0, calc(var(--card-active) * -4px), 0);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 300ms ease,
+              box-shadow 300ms ease;
+  overflow: hidden;
+  isolation: isolate;
+  outline: none;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      240px circle at var(--card-mx) var(--card-my),
+      rgba(168, 85, 247, 0.22),
+      rgba(59, 130, 246, 0.10) 35%,
+      transparent 65%
+    );
+    opacity: var(--card-active);
+    transition: opacity 300ms ease;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.10) 0%,
+      rgba(255, 255, 255, 0) 40%
+    );
+    opacity: var(--card-active);
+    transition: opacity 300ms ease;
+    z-index: 2;
+  }
+  &:hover {
+    border-color: rgba(168, 85, 247, 0.35);
+    box-shadow:
+      0 24px 60px -18px rgba(168, 85, 247, 0.28),
+      0 0 0 1px rgba(168, 85, 247, 0.12);
+  }
+  &:focus-visible {
+    border-color: rgba(168, 85, 247, 0.55);
+    box-shadow:
+      0 0 0 2px var(--color-background),
+      0 0 0 4px rgba(168, 85, 247, 0.75),
+      0 24px 60px -18px rgba(168, 85, 247, 0.28);
+  }
+  &:focus-visible::before,
+  &:focus-visible::after { opacity: 1; }
+  & > * { position: relative; z-index: 3; }
+}
+
+/* Touch / coarse-pointer: keep visuals, drop the 3D tilt */
+@media (hover: none), (pointer: coarse) {
+  .card-tilt {
+    transform: none;
+    transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  }
+  .card-tilt:active {
+    transform: scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-tilt {
+    transform: none !important;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .card-tilt::before,
+  .card-tilt::after { display: none !important; }
+  .card-tilt:hover,
+  .card-tilt:focus-visible {
+    border-color: rgba(168, 85, 247, 0.35);
+    box-shadow: 0 8px 24px -12px rgba(168, 85, 247, 0.18);
+  }
+  .bento-card {
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .bento-card:hover {
+    transform: none;
+    box-shadow: 0 8px 24px -12px rgba(168, 85, 247, 0.18);
+  }
+}
+
+
+@utility text-gradient-focal {
+  background: var(--gradient-focal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@utility overline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  color: var(--color-muted-foreground);
+}
+
+@utility mono {
+  font-family: var(--font-mono);
+}
+
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+}
+
+@keyframes ken-burns {
+  0%   { transform: scale(1.06) translate3d(-1.5%, -1%, 0); }
+  50%  { transform: scale(1.14) translate3d(1.5%, 1%, 0); }
+  100% { transform: scale(1.06) translate3d(-1.5%, -1%, 0); }
+}
+@keyframes scan-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@utility reel-motion {
+  animation: ken-burns 14s ease-in-out infinite;
+  will-change: transform;
+}
+@utility reel-marquee {
+  animation: marquee-x 40s linear infinite;
+  will-change: transform;
+}
+@utility reel-progress {
+  transform-origin: left center;
+  animation: scan-progress 6s linear infinite;
+}
